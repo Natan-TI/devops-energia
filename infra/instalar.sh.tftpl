@@ -1,0 +1,35 @@
+#!/bin/bash
+# Roda uma vez, na criação da máquina: instala o Docker, baixa o código e sobe o painel.
+# O andamento fica em /var/log/energia-instalacao.log.
+set -euo pipefail
+exec > /var/log/energia-instalacao.log 2>&1
+
+COMPOSE_VERSAO="v5.7.1"
+COMPOSE_SHA256="af426722a8af5de812fcee30cc1c39f0639f5f723cbadefb25e5d4db054064cf"
+PASTA=/opt/energia-painel
+
+dnf install -y docker git
+systemctl enable --now docker
+
+# Plugin do Docker Compose, conferido pelo hash publicado na versão oficial.
+mkdir -p /usr/local/lib/docker/cli-plugins
+curl -fsSL -o /usr/local/lib/docker/cli-plugins/docker-compose \
+  "https://github.com/docker/compose/releases/download/$${COMPOSE_VERSAO}/docker-compose-linux-x86_64"
+echo "$${COMPOSE_SHA256}  /usr/local/lib/docker/cli-plugins/docker-compose" | sha256sum --check
+chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+
+git clone "${repositorio}" "$PASTA"
+cd "$PASTA"
+git checkout "${versao}"
+
+# Os segredos do banco e da API são gerados aqui e nunca saem da máquina.
+umask 077
+cat > .env <<EOF
+POSTGRES_PASSWORD=$(openssl rand -hex 24)
+API_KEY=$(openssl rand -hex 32)
+METRICS_TOKEN=${metrics_token}
+PORTA=80
+INTERVALO_S=5
+EOF
+
+bash infra/deploy.sh

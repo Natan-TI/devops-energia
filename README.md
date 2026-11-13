@@ -5,7 +5,7 @@ abertas. **Os dados exibidos são simulados.**
 
 Entrega da disciplina **Secure DevOps Tools & Cloud Computing** · FIAP · Global Solution 2026.2 · CitizenTech · 4ES
 
-> Em construção: pipeline, Terraform, observabilidade e Ficha Técnica entram nas próximas etapas.
+> Em construção: a Ficha Técnica e o relatório entram na última etapa.
 
 ## ▶️ Como rodar
 
@@ -152,3 +152,56 @@ python -m pytest
 ```
 
 Os testes usam um banco SQLite temporário e não precisam do Docker.
+
+## ☁️ Infraestrutura na AWS (Terraform)
+
+A pasta `infra/` cria, na AWS, uma máquina EC2 com endereço fixo e um grupo de segurança.
+
+- **Sem SSH:** a única porta de entrada é a 80. A administração e o deploy usam o AWS Systems Manager.
+- **Segredos:** a senha do banco e a chave da API são geradas dentro da máquina e não saem dela.
+  O estado do Terraform (`*.tfstate`) e os arquivos `*.tfvars` ficam fora do repositório.
+- **Disco criptografado** e serviço de metadados só com token (IMDSv2).
+- **Sem HTTPS:** o MVP não tem domínio próprio, então o painel responde em HTTP. Em produção, entraria um
+  domínio com certificado.
+
+O projeto foi feito para o AWS Academy Learner Lab, que não permite criar papéis de IAM: a máquina usa o
+perfil `LabInstanceProfile`, que já existe no laboratório.
+
+Com as credenciais da AWS no ambiente (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` e `AWS_SESSION_TOKEN`):
+
+```bash
+cd infra
+```
+
+```bash
+terraform init
+```
+
+```bash
+terraform apply
+```
+
+Ao final, o Terraform mostra a URL do painel. A primeira subida leva alguns minutos, porque a máquina
+instala o Docker, constrói a imagem e gera o histórico de eventos.
+
+Para apagar tudo:
+
+```bash
+terraform destroy
+```
+
+## 🚀 Pipeline
+
+O arquivo `.github/workflows/pipeline.yml` roda a cada push:
+
+| Job | O que faz |
+|---|---|
+| Testes | Roda os testes automáticos. |
+| Gitleaks | Procura segredos em todo o histórico do repositório. |
+| Semgrep | Analisa o código Python, o Dockerfile, o compose e o Terraform. |
+| Build e Trivy | Constrói a imagem e barra vulnerabilidades altas ou críticas na imagem e na configuração. |
+| Deploy na AWS | Só na branch principal e só se tudo passou: publica o commit na máquina pelo Systems Manager. |
+
+O deploy usa três segredos do repositório (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` e
+`AWS_SESSION_TOKEN`) e só roda quando a variável `DEPLOY_ATIVO` do repositório vale `true`. No Learner Lab,
+as credenciais mudam a cada sessão, então os segredos precisam ser atualizados quando o laboratório é aberto.

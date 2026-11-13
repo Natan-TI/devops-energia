@@ -13,3 +13,7 @@ scrape_configs:
     # "api:8000" para o painel local ou "endereço:porta" do painel publicado na nuvem.
     file_sd_configs:
       - files: [/tmp/alvos.json]
+    # Se o painel exigir token em /metrics, ele vem da variável METRICS_TOKEN. Vazio: nenhum token é enviado.
+    authorization:
+      type: Bearer
+      credentials_file: /tmp/token

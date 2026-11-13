@@ -12,12 +12,14 @@ services:
     image: prom/prometheus:v3.16.0
     environment:
       ALVO: ${ALVO:-api:8000}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
     # O Prometheus não lê variáveis no arquivo de configuração: o alvo é gravado antes de iniciar.
     entrypoint:
       - /bin/sh
       - -c
       - |
         printf '[{"targets": ["%s"]}]' "$$ALVO" > /tmp/alvos.json
+        printf '%s' "$$METRICS_TOKEN" > /tmp/token
         exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml \
           --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=7d
     volumes:
