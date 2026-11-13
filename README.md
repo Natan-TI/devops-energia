@@ -5,7 +5,40 @@ abertas. **Os dados exibidos são simulados.**
 
 Entrega da disciplina **Secure DevOps Tools & Cloud Computing** · FIAP · Global Solution 2026.2 · CitizenTech · 4ES
 
-> Em construção: a Ficha Técnica e o relatório entram na última etapa.
+## 👥 Integrantes
+
+| Nome | RM |
+|---|---|
+| Gustavo Henrique Santos Bonfim | RM98864 |
+| João Pedro Marques | RM98307 |
+| Kayky Paschoal Ribeiro | RM99929 |
+| Lucas Yuji Farias Umada | RM99757 |
+| Natan Eguchi dos Santos | RM98720 |
+
+## 🔗 Links
+
+- 📄 **Relatório com as evidências:** [docs/relatorio-devops.pdf](docs/relatorio-devops.pdf)
+- 🌐 **URL pública do MVP:** http://100.60.176.115
+- 🚀 **Pipeline:** https://github.com/Natan-TI/devops-energia/actions
+- 🖼️ **Capturas originais:** [docs/evidencias](docs/evidencias)
+
+A URL pública roda no AWS Academy Learner Lab, que desliga o ambiente depois de poucas horas. Fora das
+sessões do laboratório, o endereço não responde; a publicação está comprovada no relatório.
+
+## 📋 Ficha Técnica do MVP
+
+| Campo | Conteúdo |
+|---|---|
+| Nome do produto | Energia que dá Lucro |
+| Cidadão e território | Donos e funcionários de pequenos comércios de bairro (mercadinhos, padarias, açougues, lojas) em cidades brasileiras. |
+| Problema, em uma frase | O pequeno comerciante paga caro de energia sem saber quais hábitos e equipamentos causam o desperdício. |
+| Proposta de valor | Mostrar o desperdício em reais, avisar na hora em que ele acontece e sugerir ações simples, usando as câmeras que a loja já tem. |
+| Arquitetura: componentes | API e painel do comerciante (Produção, este repositório) · detecção por câmera (Visão) · robô com sensores (Físico) · pipeline de dados (Dados) · consultor de eficiência com LLM local (Inteligência) · alertas e resumos automáticos (Automação) · modelo de negócio (Pitch). |
+| Fontes de dados | Eventos simulados, no formato produzido pela detecção por câmera e pelo robô. Tarifa de energia da ANEEL. |
+| Modelos de IA utilizados | Nenhum neste repositório. A detecção (YOLO11n) e o consultor (LLM local) rodam fora da nuvem e enviam só o resultado. |
+| URL do MVP e repositório | http://100.60.176.115 · https://github.com/Natan-TI/devops-energia |
+| Indicadores de impacto | R$ e kWh de desperdício evitados por loja ao mês · tempo médio de porta aberta · percentual de alertas resolvidos em poucos minutos. |
+| ODS conectados | ODS 7 (energia acessível e limpa), ODS 12 (consumo responsável), ODS 9, ODS 11 e ODS 13. |
 
 ## ▶️ Como rodar
 

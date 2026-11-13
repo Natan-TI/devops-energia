@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Energia que dá Lucro - Deploy Blindado</title>
+<style>
+@page { size: A4; margin: 18mm 17mm; }
+body { font-family: "Segoe UI", Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #18212b; }
+h1 { font-size: 20pt; line-height: 1.2; margin: 0 0 4pt; }
+h1 + p { color: #5b6876; margin: 0 0 10pt; }
+h2 { font-size: 14pt; margin: 20pt 0 6pt; padding-bottom: 3pt; border-bottom: 2px solid #0b7a53; break-after: avoid; }
+h3 { font-size: 11.5pt; margin: 12pt 0 4pt; break-after: avoid; }
+p { margin: 0 0 6pt; }
+a { color: #0b6a4a; }
+table { border-collapse: collapse; width: 100%; margin: 6pt 0 8pt; font-size: 9.5pt; break-inside: avoid; }
+th, td { border: 1px solid #c9d1d9; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+th { background: #e9f4ef; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+code { font-family: Consolas, monospace; font-size: 9pt; background: #f0f3f5; padding: 0 2pt; }
+ul { margin: 0 0 6pt; padding-left: 16pt; }
+li { margin: 1.5pt 0; }
+.links { background: #e9f4ef; border-left: 4px solid #0b7a53; padding: 8pt 10pt; margin: 8pt 0; }
+.links p { margin: 2pt 0; }
+.aviso { background: #fff4d6; border-left: 4px solid #d99a00; padding: 6pt 10pt; margin: 8pt 0; }
+figure { margin: 8pt 0 12pt; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; max-height: 118mm; border: 1px solid #c9d1d9; }
+figcaption { font-size: 9pt; color: #5b6876; margin-top: 3pt; }
+.diagrama { width: 100%; }
+.diagrama text { font-family: "Segoe UI", Arial, sans-serif; }
+.pagina { break-before: page; }
+</style>
+</head>
+<body>
+
+<h1>Energia que dá Lucro · Deploy Blindado</h1>
+<p>Secure DevOps Tools &amp; Cloud Computing · FIAP · Engenharia de Software · 4ES · Global Solution 2026.2 · CitizenTech</p>
+
+<table>
+  <tr><th>Integrante</th><th>RM</th></tr>
+  <tr><td>Gustavo Henrique Santos Bonfim</td><td>RM98864</td></tr>
+  <tr><td>João Pedro Marques</td><td>RM98307</td></tr>
+  <tr><td>Kayky Paschoal Ribeiro</td><td>RM99929</td></tr>
+  <tr><td>Lucas Yuji Farias Umada</td><td>RM99757</td></tr>
+  <tr><td>Natan Eguchi dos Santos</td><td>RM98720</td></tr>
+</table>
+
+<div class="links">
+  <p><b>Repositório:</b> <a href="https://github.com/Natan-TI/devops-energia">https://github.com/Natan-TI/devops-energia</a></p>
+  <p><b>URL pública do MVP:</b> <a href="http://100.60.176.115">http://100.60.176.115</a></p>
+  <p><b>Pipeline:</b> <a href="https://github.com/Natan-TI/devops-energia/actions">https://github.com/Natan-TI/devops-energia/actions</a></p>
+  <p><b>Evidências originais:</b> <a href="https://github.com/Natan-TI/devops-energia/tree/main/docs/evidencias">docs/evidencias no repositório</a></p>
+</div>
+
+<div class="aviso">
+  <b>Sobre a URL pública.</b> O MVP roda no AWS Academy Learner Lab, que desliga o ambiente depois de poucas
+  horas de sessão. Conforme combinado com o professor, a publicação é comprovada pelas capturas deste
+  documento, feitas em 13/11/2026 com o ambiente no ar. O endereço é fixo e volta a responder quando o
+  laboratório é reaberto.
+</div>
+
+<h2>1. O que foi entregue</h2>
+<p>O MVP é o painel do comerciante do produto Energia que dá Lucro: uma API com telas que mostram, em reais
+e em kWh, o desperdício causado por portas de geladeiras e freezers abertas (detectadas por câmera) e por
+luzes acesas em ambientes vazios (detectadas por um robô com sensor de luminosidade). Os eventos exibidos
+são gerados por um simulador, no mesmo formato que a aplicação de visão computacional do grupo produz.</p>
+
+<table>
+  <tr><th>Bloco da atividade</th><th>Como foi atendido</th><th>Onde ver</th></tr>
+  <tr><td>Container</td><td>Dockerfile em dois estágios, usuário sem privilégios (uid 10001), sem <code>pip</code> na imagem final e nenhum segredo embutido. <code>docker compose</code> sobe banco, API e simulador.</td><td><code>Dockerfile</code>, <code>docker-compose.yml</code></td></tr>
+  <tr><td>Infraestrutura como código</td><td>Terraform cria máquina, endereço fixo e grupo de segurança. Estado e <code>.tfvars</code> fora do repositório. Nenhuma porta de administração aberta: não existe regra para a porta 22.</td><td><code>infra/</code>, seção 5</td></tr>
+  <tr><td>Pipeline DevSecOps</td><td>GitHub Actions com testes, Gitleaks, Semgrep, build e Trivy a cada push; credenciais em GitHub Secrets; deploy automático. Uma execução barrada e a corrigida.</td><td><code>.github/workflows/pipeline.yml</code>, seção 4</td></tr>
+  <tr><td>Observabilidade</td><td>Prometheus e Grafana com as quatro métricas de ouro e cinco alertas. O alerta de taxa de erros foi disparado e resolvido.</td><td><code>observabilidade/</code>, seção 6</td></tr>
+  <tr><td>Documentação</td><td>Arquitetura, responsabilidade compartilhada, LGPD, custo e README reproduzível.</td><td>Seções 2, 7, 8 e 9</td></tr>
+</table>
+
+<h2>2. Arquitetura</h2>
+<svg class="diagrama" viewBox="0 0 760 400" role="img" aria-label="Diagrama da arquitetura">
+  <defs>
+    <marker id="seta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#18212b"/></marker>
+  </defs>
+  <!-- Desenvolvedor e GitHub -->
+  <rect x="10" y="20" width="150" height="50" rx="6" fill="#f0f3f5" stroke="#5b6876"/>
+  <text x="85" y="42" text-anchor="middle" font-size="11" font-weight="bold">Desenvolvedor</text>
+  <text x="85" y="58" text-anchor="middle" font-size="9.5">git push</text>
+
+  <rect x="10" y="110" width="150" height="150" rx="6" fill="#fff" stroke="#18212b"/>
+  <text x="85" y="128" text-anchor="middle" font-size="11" font-weight="bold">GitHub Actions</text>
+  <text x="85" y="148" text-anchor="middle" font-size="9.5">1. Testes</text>
+  <text x="85" y="164" text-anchor="middle" font-size="9.5">2. Gitleaks</text>
+  <text x="85" y="180" text-anchor="middle" font-size="9.5">3. Semgrep</text>
+  <text x="85" y="196" text-anchor="middle" font-size="9.5">4. Build + Trivy</text>
+  <text x="85" y="216" text-anchor="middle" font-size="9.5" font-weight="bold">5. Deploy</text>
+  <text x="85" y="232" text-anchor="middle" font-size="8.5" fill="#5b6876">(só na main, se 1 a 4</text>
+  <text x="85" y="244" text-anchor="middle" font-size="8.5" fill="#5b6876">passarem)</text>
+  <line x1="85" y1="70" x2="85" y2="108" stroke="#18212b" marker-end="url(#seta)"/>
+
+  <!-- AWS -->
+  <rect x="230" y="20" width="390" height="300" rx="8" fill="#fff8ec" stroke="#d99a00" stroke-dasharray="5 3"/>
+  <text x="242" y="38" font-size="11" font-weight="bold" fill="#8a6200">AWS · us-east-1 (criado por Terraform)</text>
+
+  <rect x="250" y="52" width="150" height="46" rx="6" fill="#fff" stroke="#5b6876"/>
+  <text x="325" y="72" text-anchor="middle" font-size="10.5" font-weight="bold">Systems Manager</text>
+  <text x="325" y="87" text-anchor="middle" font-size="9">Run Command (sem SSH)</text>
+
+  <rect x="250" y="120" width="350" height="186" rx="6" fill="#fff" stroke="#18212b"/>
+  <text x="262" y="137" font-size="10.5" font-weight="bold">EC2 t3.small · Amazon Linux 2023 · IP fixo</text>
+  <text x="262" y="151" font-size="8.5" fill="#5b6876">Grupo de segurança: entrada só na porta 80 · disco criptografado · IMDSv2</text>
+
+  <rect x="266" y="162" width="318" height="132" rx="5" fill="#e9f4ef" stroke="#0b7a53"/>
+  <text x="276" y="177" font-size="9.5" font-weight="bold" fill="#0b6a4a">Docker Compose (rede interna)</text>
+  <rect x="278" y="186" width="92" height="44" rx="4" fill="#fff" stroke="#0b7a53"/>
+  <text x="324" y="204" text-anchor="middle" font-size="10" font-weight="bold">API + telas</text>
+  <text x="324" y="218" text-anchor="middle" font-size="8.5">FastAPI · :8000</text>
+  <rect x="384" y="186" width="92" height="44" rx="4" fill="#fff" stroke="#0b7a53"/>
+  <text x="430" y="204" text-anchor="middle" font-size="10" font-weight="bold">PostgreSQL</text>
+  <text x="430" y="218" text-anchor="middle" font-size="8.5">sem porta pública</text>
+  <rect x="490" y="186" width="84" height="44" rx="4" fill="#fff" stroke="#0b7a53"/>
+  <text x="532" y="204" text-anchor="middle" font-size="10" font-weight="bold">Simulador</text>
+  <text x="532" y="218" text-anchor="middle" font-size="8.5">eventos fictícios</text>
+  <line x1="370" y1="208" x2="382" y2="208" stroke="#18212b" marker-end="url(#seta)"/>
+  <line x1="490" y1="240" x2="372" y2="240" stroke="#18212b" marker-end="url(#seta)"/>
+  <text x="430" y="254" text-anchor="middle" font-size="8.5">POST /events (X-API-Key)</text>
+  <text x="276" y="284" font-size="8.5" fill="#5b6876">Segredos gerados na máquina, no arquivo .env (permissão 600)</text>
+
+  <line x1="160" y1="216" x2="205" y2="216" stroke="#18212b"/>
+  <line x1="205" y1="216" x2="205" y2="75" stroke="#18212b"/>
+  <line x1="205" y1="75" x2="248" y2="75" stroke="#18212b" marker-end="url(#seta)"/>
+  <text x="196" y="150" text-anchor="middle" font-size="8.5" transform="rotate(-90 196 150)">API da AWS (HTTPS)</text>
+  <line x1="325" y1="98" x2="325" y2="118" stroke="#18212b" marker-end="url(#seta)"/>
+
+  <!-- Usuário -->
+  <rect x="650" y="150" width="100" height="50" rx="6" fill="#f0f3f5" stroke="#5b6876"/>
+  <text x="700" y="171" text-anchor="middle" font-size="11" font-weight="bold">Comerciante</text>
+  <text x="700" y="187" text-anchor="middle" font-size="9">navegador</text>
+  <line x1="650" y1="175" x2="602" y2="175" stroke="#18212b" marker-end="url(#seta)"/>
+  <text x="626" y="168" text-anchor="middle" font-size="8.5">HTTP :80</text>
+
+  <!-- Observabilidade -->
+  <rect x="230" y="338" width="390" height="52" rx="6" fill="#fff" stroke="#18212b"/>
+  <text x="242" y="356" font-size="10.5" font-weight="bold">Observabilidade (computador da equipe)</text>
+  <text x="242" y="372" font-size="9">Prometheus (coleta e alertas) → Grafana (4 métricas de ouro)</text>
+  <text x="242" y="384" font-size="8.5" fill="#5b6876">Portas 9090 e 3000 só em 127.0.0.1</text>
+  <line x1="440" y1="338" x2="440" y2="308" stroke="#18212b" marker-end="url(#seta)"/>
+  <text x="446" y="328" font-size="8.5">GET /metrics com token</text>
+</svg>
+
+<h3>Componentes</h3>
+<table>
+  <tr><th>Componente</th><th>Tecnologia</th><th>Papel</th></tr>
+  <tr><td>API e telas</td><td>Python 3.13, FastAPI, Jinja2</td><td>Recebe eventos e alertas, calcula os resumos e monta as telas no servidor, sem JavaScript.</td></tr>
+  <tr><td>Banco de dados</td><td>PostgreSQL 17</td><td>Guarda eventos e alertas. Só é acessível pela rede interna do compose.</td></tr>
+  <tr><td>Simulador</td><td>Python (biblioteca padrão)</td><td>Gera eventos de porta aberta e de luz acesa, no contrato combinado pelo grupo.</td></tr>
+  <tr><td>Infraestrutura</td><td>Terraform, AWS EC2</td><td>Uma máquina com endereço fixo e um grupo de segurança.</td></tr>
+  <tr><td>Pipeline</td><td>GitHub Actions</td><td>Verifica e publica a cada push.</td></tr>
+  <tr><td>Observabilidade</td><td>Prometheus 3.16, Grafana 13.3</td><td>Métricas, painel e alertas.</td></tr>
+</table>
+
+<h2>3. Segurança aplicada</h2>
+<table>
+  <tr><th>Camada</th><th>Medida</th></tr>
+  <tr><td>Imagem</td><td>Dois estágios; usuário sem privilégios; correções de segurança do sistema aplicadas no build; <code>pip</code> removido da imagem final; só o código da aplicação entra na imagem (<code>.dockerignore</code> por lista de permissão).</td></tr>
+  <tr><td>Contêineres</td><td>Sistema de arquivos somente leitura, todas as capacidades do Linux removidas e <code>no-new-privileges</code> na API e no simulador.</td></tr>
+  <tr><td>Segredos</td><td>Nenhum segredo no código, na imagem ou no repositório. Local: arquivo <code>.env</code> fora do git. Nuvem: gerados dentro da máquina. Pipeline: GitHub Secrets. O Gitleaks varre todo o histórico a cada push.</td></tr>
+  <tr><td>Aplicação</td><td>Escrita só com chave no cabeçalho <code>X-API-Key</code>, comparada em tempo constante; entradas validadas por esquema; <code>/metrics</code> exige token na nuvem; cabeçalhos de segurança e política de conteúdo que proíbe scripts; exportação CSV protegida contra injeção de fórmulas.</td></tr>
+  <tr><td>Rede</td><td>Entrada só na porta 80. Saída só nas portas 80 e 443. Banco sem porta publicada. Sem SSH: a administração é feita pelo AWS Systems Manager.</td></tr>
+  <tr><td>Máquina</td><td>Disco criptografado; serviço de metadados só com token (IMDSv2).</td></tr>
+  <tr><td>Pipeline</td><td>Permissão mínima (<code>contents: read</code>); ações fixadas pelo hash do commit; o deploy só roda na branch principal e depois de todas as verificações.</td></tr>
+</table>
+
+<h2 class="pagina">4. Pipeline DevSecOps</h2>
+<p>O pipeline roda a cada push, com cinco jobs. Os quatro primeiros rodam em paralelo; o deploy depende de
+todos eles.</p>
+<table>
+  <tr><th>Job</th><th>Ferramenta</th><th>O que barra</th></tr>
+  <tr><td>Testes</td><td>pytest (17 testes)</td><td>Regressão na API, nas telas e nas regras.</td></tr>
+  <tr><td>Gitleaks</td><td>Gitleaks</td><td>Segredo em qualquer commit do histórico.</td></tr>
+  <tr><td>Semgrep</td><td>Semgrep</td><td>Padrões inseguros no Python, no Dockerfile, no compose e no Terraform.</td></tr>
+  <tr><td>Build e Trivy</td><td>Docker, Trivy</td><td>Vulnerabilidade alta ou crítica com correção disponível na imagem; configuração insegura no Dockerfile e no Terraform.</td></tr>
+  <tr><td>Deploy na AWS</td><td>AWS CLI, Systems Manager</td><td>Publica o commit na máquina e confere <code>/health</code>.</td></tr>
+</table>
+
+<h3>Execução barrada e execução corrigida</h3>
+<table>
+  <tr><th>Execução</th><th>Commit</th><th>Resultado</th></tr>
+  <tr><td><a href="https://github.com/Natan-TI/devops-energia/actions/runs/43335962644">#3</a></td><td>Adiciona <code>python-multipart</code> na versão 0.0.6</td><td><b>Barrada pelo Trivy:</b> 5 vulnerabilidades altas na imagem.</td></tr>
+  <tr><td><a href="https://github.com/Natan-TI/devops-energia/actions/runs/43336215857">#4</a></td><td>Atualiza <code>python-multipart</code> para a versão 0.0.33</td><td><b>Passou.</b></td></tr>
+</table>
+<p>A execução #2, logo antes, também falhou, mas por outro motivo: a biblioteca escolhida na primeira
+tentativa não instalava no Python 3.13, e o pipeline parou na instalação, antes do Trivy. Ela ficou no
+histórico e não é usada como evidência.</p>
+<p>Antes do primeiro push, as mesmas ferramentas rodaram localmente e apontaram problemas reais, que foram
+corrigidos: o Semgrep acusou o uso de <code>urllib</code> com endereço dinâmico no simulador, e o Trivy
+acusou 7 vulnerabilidades altas na imagem (biblioteca <code>zlib</code> do sistema e pacotes embutidos no
+<code>pip</code>).</p>
+
+<figure><img src="evidencias/07-pipeline-historico.png" alt="Histórico de execuções"><figcaption>Figura 1. Histórico: execução #3 barrada e #4 corrigida.</figcaption></figure>
+<figure><img src="evidencias/04-pipeline-barrado.png" alt="Execução barrada"><figcaption>Figura 2. Execução #3: o job "Build e Trivy" falhou e nada foi publicado.</figcaption></figure>
+<figure><img src="evidencias/05c-pipeline-barrado-log-trivy.png" alt="Log do Trivy"><figcaption>Figura 3. Log do Trivy na execução #3: as 5 vulnerabilidades, com a versão instalada e a versão corrigida.</figcaption></figure>
+<figure><img src="evidencias/06-pipeline-corrigido.png" alt="Execução corrigida"><figcaption>Figura 4. Execução #4: todos os jobs passaram depois da atualização da dependência.</figcaption></figure>
+
+<h3>Deploy automático</h3>
+<p>O job de deploy usa credenciais guardadas em GitHub Secrets, localiza a máquina pela etiqueta e envia um
+comando pelo AWS Systems Manager: baixar o commit, construir a imagem e subir os contêineres. Ele só termina
+com sucesso quando o painel responde em <code>/health</code>. Não há chave SSH nem porta 22.</p>
+<figure><img src="evidencias/15-pipeline-com-deploy.png" alt="Execução com deploy"><figcaption>Figura 5. <a href="https://github.com/Natan-TI/devops-energia/actions/runs/43467147420">Execução #9</a>: os quatro jobs de verificação e o deploy, com a URL publicada.</figcaption></figure>
+<figure><img src="evidencias/19-deploy-log-systems-manager.png" alt="Log do deploy"><figcaption>Figura 6. Log do deploy: build na máquina, contêineres saudáveis, "Deploy do commit 67d0886" e "Painel no ar".</figcaption></figure>
+<figure><img src="evidencias/22-aws-systems-manager-comandos.png" alt="Comandos no Systems Manager"><figcaption>Figura 7. AWS Systems Manager: os dois comandos de deploy enviados pelo pipeline, com êxito.</figcaption></figure>
+
+<h2 class="pagina">5. Infraestrutura na AWS</h2>
+<p>O Terraform cria sete recursos: a máquina, o endereço fixo, o grupo de segurança com três regras e o
+token de métricas. O ambiente é o AWS Academy Learner Lab, que não permite criar papéis de IAM; por isso a
+máquina usa o perfil <code>LabInstanceProfile</code>, que já existe no laboratório.</p>
+<ul>
+  <li><b>Estado e variáveis:</b> <code>*.tfstate</code> e <code>*.tfvars</code> estão no <code>.gitignore</code>. As credenciais da AWS vêm do ambiente e nunca aparecem nos arquivos.</li>
+  <li><b>Verificação:</b> <code>terraform validate</code> passou, e o Trivy não encontrou problemas de severidade média, alta ou crítica. As duas regras públicas (entrada na porta 80 e saída nas portas 80 e 443) têm exceção documentada no código.</li>
+</ul>
+<figure><img src="evidencias/18-nuvem-painel-com-endereco.png" alt="Painel no endereço público"><figcaption>Figura 8. O painel aberto no endereço público <code>100.60.176.115</code>. O navegador avisa "Não seguro" porque o MVP não usa HTTPS (veja a seção 10).</figcaption></figure>
+<figure><img src="evidencias/20-aws-instancia.png" alt="Instância na AWS"><figcaption>Figura 9. Console da AWS: a instância <code>energia-painel</code> em execução, com o IP elástico.</figcaption></figure>
+<figure><img src="evidencias/21-aws-grupo-de-seguranca.png" alt="Grupo de segurança"><figcaption>Figura 10. Grupo de segurança: uma única regra de entrada, HTTP na porta 80. Não há regra para a porta 22.</figcaption></figure>
+<p>Respostas do painel publicado (arquivo <code>11-nuvem-respostas.txt</code>): <code>/health</code> responde 200,
+<code>/metrics</code> sem token responde 401 e a porta 22 não responde.</p>
+
+<h2 class="pagina">6. Observabilidade</h2>
+<p>A API expõe métricas para o Prometheus, que as coleta a cada 5 segundos. O Grafana mostra as quatro
+métricas de ouro. Os dois rodam no computador da equipe e apontam para o painel local ou para o publicado.</p>
+<table>
+  <tr><th>Métrica de ouro</th><th>O que o painel mostra</th><th>Alerta</th></tr>
+  <tr><td>Tráfego</td><td>Requisições por segundo, por rota; eventos recebidos por minuto.</td><td><code>SemTrafego</code>: nenhuma requisição em 5 minutos.</td></tr>
+  <tr><td>Erros</td><td>Taxa de respostas 5xx; respostas por código.</td><td><code>TaxaDeErrosAlta</code>: mais de 5% por 30 segundos.</td></tr>
+  <tr><td>Latência</td><td>Percentis p50, p95 e p99; tempo médio por rota.</td><td><code>LatenciaAlta</code>: p95 acima de 0,5 s por 2 minutos.</td></tr>
+  <tr><td>Saturação</td><td>CPU e memória da API; requisições em andamento.</td><td><code>MemoriaAlta</code>: mais de 400 MB por 5 minutos.</td></tr>
+</table>
+<p>Há também o alerta <code>PainelForaDoAr</code>, para quando o Prometheus não consegue ler as métricas.</p>
+
+<h3>Alerta disparado</h3>
+<p>Em 12/11/2026, no ambiente local, o contêiner do banco de dados foi parado às 21:32. A API passou a
+responder com erro 500, a taxa de erros chegou a 100% e o alerta <code>TaxaDeErrosAlta</code> disparou cerca
+de um minuto depois. O alerta <code>LatenciaAlta</code> também disparou, porque as requisições ficaram
+esperando o banco. O banco foi religado às 21:33 e os alertas se resolveram sozinhos.</p>
+<figure><img src="evidencias/08-alerta-disparado-prometheus.png" alt="Alerta no Prometheus"><figcaption>Figura 11. Prometheus: alerta <code>TaxaDeErrosAlta</code> em estado FIRING.</figcaption></figure>
+<figure><img src="evidencias/09-grafana-durante-falha.png" alt="Grafana durante a falha"><figcaption>Figura 12. Grafana durante a falha: erros em 100%, latência alta e 1 alerta disparado.</figcaption></figure>
+<figure><img src="evidencias/10-grafana-apos-recuperacao.png" alt="Grafana após a recuperação"><figcaption>Figura 13. Grafana depois da recuperação: o pico de erros e os períodos de alerta marcados em vermelho.</figcaption></figure>
+<figure><img src="evidencias/13-grafana-monitorando-a-nuvem.png" alt="Grafana monitorando a nuvem"><figcaption>Figura 14. Em 13/11/2026: o mesmo painel lendo as métricas do MVP publicado na AWS.</figcaption></figure>
+<figure><img src="evidencias/14-prometheus-alvo-na-nuvem.png" alt="Alvo do Prometheus"><figcaption>Figura 15. Prometheus com o alvo <code>100.60.176.115</code> em UP.</figcaption></figure>
+
+<h2 class="pagina">7. Responsabilidade compartilhada</h2>
+<p>Na AWS, a segurança é dividida: a AWS cuida da nuvem, e o cliente cuida do que coloca nela. Como o MVP
+usa uma máquina virtual (EC2), a maior parte da configuração é responsabilidade da equipe.</p>
+<table>
+  <tr><th>Camada</th><th>Responsável</th><th>Neste projeto</th></tr>
+  <tr><td>Datacenter, rede física, hardware e virtualização</td><td>AWS</td><td>Região us-east-1.</td></tr>
+  <tr><td>Disponibilidade dos serviços (EC2, EBS, Systems Manager)</td><td>AWS</td><td>Usados como serviço.</td></tr>
+  <tr><td>Contas e permissões de acesso (IAM)</td><td>AWS Academy e equipe</td><td>O laboratório entrega um papel pronto (<code>LabRole</code>). Em uma conta própria, a equipe criaria um papel com a permissão mínima.</td></tr>
+  <tr><td>Regras de rede</td><td>Equipe</td><td>Grupo de segurança definido no Terraform.</td></tr>
+  <tr><td>Sistema operacional e atualizações</td><td>Equipe</td><td>Amazon Linux 2023. As atualizações do sistema base da imagem são aplicadas a cada build.</td></tr>
+  <tr><td>Aplicação e dependências</td><td>Equipe</td><td>Verificadas por Semgrep e Trivy a cada push.</td></tr>
+  <tr><td>Segredos</td><td>Equipe</td><td>GitHub Secrets e arquivo <code>.env</code> na máquina.</td></tr>
+  <tr><td>Dados, criptografia e cópias de segurança</td><td>Equipe</td><td>Disco criptografado. O MVP não faz cópia de segurança do banco.</td></tr>
+  <tr><td>Monitoramento e resposta a incidentes</td><td>Equipe</td><td>Prometheus, Grafana e alertas.</td></tr>
+</table>
+
+<h2>8. Dados pessoais e LGPD</h2>
+<table>
+  <tr><th>Dado</th><th>É dado pessoal?</th><th>Onde fica</th></tr>
+  <tr><td>Eventos (loja, equipamento, início, duração, custo)</td><td>Não. Descrevem equipamentos, não pessoas. No MVP, são fictícios.</td><td>PostgreSQL, na máquina da AWS.</td></tr>
+  <tr><td>Alertas (loja, equipamento, canal, mensagem)</td><td>Não no MVP: o simulador não usa telefone nem nome.</td><td>PostgreSQL, na máquina da AWS.</td></tr>
+  <tr><td>Imagens das câmeras</td><td>Sim, quando mostram pessoas.</td><td><b>Não chegam à nuvem.</b> A detecção roda no computador da loja, que envia só o evento.</td></tr>
+  <tr><td>Endereço IP de quem acessa o painel</td><td>Sim.</td><td>Registro de acesso da API, no log do contêiner, dentro da máquina.</td></tr>
+  <tr><td>Cadastro do comerciante (nome, telefone para alertas)</td><td>Sim.</td><td>Não existe no MVP: o painel não tem cadastro nem login.</td></tr>
+</table>
+<p>O MVP foi desenhado para não precisar de dados pessoais (minimização). Para virar produto, estes pontos
+precisam ser tratados:</p>
+<ul>
+  <li><b>Cadastro e login:</b> nome e contato do comerciante passariam a ser guardados no banco. A base legal seria a execução do contrato com o comerciante.</li>
+  <li><b>Localização:</b> a máquina fica nos Estados Unidos, o que caracteriza transferência internacional de dados. Com dados pessoais, o banco deveria ir para a região de São Paulo (sa-east-1) ou a transferência deveria ser formalizada.</li>
+  <li><b>Acesso ao painel:</b> hoje qualquer pessoa com o endereço vê os dados da loja. Com dados reais, a leitura exigiria login.</li>
+  <li><b>Retenção e direitos do titular:</b> prazo para apagar registros de acesso e canal para pedidos de acesso e exclusão.</li>
+</ul>
+
+<h2 class="pagina">9. Estimativa de custo</h2>
+<p>Custo mensal da infraestrutura do MVP ligada 24 horas por dia, com preços de tabela da região us-east-1,
+sob demanda, em dólares. Os preços foram conferidos em sites de comparação em 13/11/2026 e devem ser
+confirmados na <a href="https://calculator.aws/">calculadora oficial da AWS</a>.</p>
+<table>
+  <tr><th>Item</th><th>Quantidade</th><th class="num">Preço unitário</th><th class="num">Custo mensal</th></tr>
+  <tr><td>EC2 t3.small (2 vCPU, 2 GB)</td><td>730 horas</td><td class="num">US$ 0,0208 por hora</td><td class="num">US$ 15,18</td></tr>
+  <tr><td>Disco EBS gp3</td><td>20 GB</td><td class="num">US$ 0,08 por GB</td><td class="num">US$ 1,60</td></tr>
+  <tr><td>Endereço IPv4 público</td><td>730 horas</td><td class="num">US$ 0,005 por hora</td><td class="num">US$ 3,65</td></tr>
+  <tr><td>Tráfego de saída</td><td>Menos de 1 GB</td><td class="num">Primeiros 100 GB gratuitos</td><td class="num">US$ 0,00</td></tr>
+  <tr><td>Systems Manager (Run Command)</td><td>-</td><td class="num">Sem custo adicional</td><td class="num">US$ 0,00</td></tr>
+  <tr><td>GitHub Actions</td><td>Cerca de 2 minutos por push</td><td class="num">Gratuito em repositório público</td><td class="num">US$ 0,00</td></tr>
+  <tr><th colspan="3">Total estimado</th><th class="num">US$ 20,43</th></tr>
+</table>
+<ul>
+  <li><b>No laboratório:</b> o custo sai do crédito do AWS Academy, e a máquina só fica ligada durante as sessões. Com a máquina desligada, continuam sendo cobrados o disco e o endereço fixo (cerca de US$ 5,25 por mês).</li>
+  <li><b>Prometheus e Grafana:</b> rodam no computador da equipe, sem custo de nuvem.</li>
+  <li><b>Para crescer:</b> uma única máquina atende o MVP. Com lojas reais, os primeiros acréscimos seriam um banco gerenciado com cópia de segurança (RDS) e um balanceador com certificado HTTPS, que sozinhos custam mais do que toda a infraestrutura atual.</li>
+</ul>
+
+<h2>10. Limitações conhecidas</h2>
+<ul>
+  <li><b>Sem HTTPS.</b> O MVP não tem domínio próprio, então responde em HTTP. A chave da API e o token de métricas trafegam sem criptografia. Em produção, entraria um domínio com certificado.</li>
+  <li><b>Ambiente temporário.</b> O laboratório desliga a máquina ao fim da sessão, e as credenciais mudam a cada sessão. Por isso o deploy é ligado por uma variável do repositório (<code>DEPLOY_ATIVO</code>).</li>
+  <li><b>Build na máquina.</b> A imagem publicada é construída na própria máquina, a partir do mesmo commit verificado pelo pipeline, mas não é o mesmo arquivo de imagem que o Trivy analisou. O ideal é publicar a imagem verificada em um registro e implantar exatamente ela.</li>
+  <li><b>Estado do Terraform local.</b> Fica no computador de quem aplicou. Em equipe, iria para um armazenamento remoto com trava.</li>
+  <li><b>Banco na mesma máquina, sem cópia de segurança.</b> Aceitável porque os dados são simulados.</li>
+  <li><b>Leitura sem login.</b> Qualquer pessoa com o endereço vê o painel.</li>
+  <li><b>Valores em reais são estimativas.</b> A tarifa tem fonte (ANEEL), mas o fator de perda da porta aberta e a potência das lâmpadas são premissas do grupo. Os detalhes estão no README.</li>
+</ul>
+
+<h2>11. Como reproduzir</h2>
+<p>O passo a passo completo está no <a href="https://github.com/Natan-TI/devops-energia#readme">README do repositório</a>. Em resumo:</p>
+<ol>
+  <li>Copiar <code>.env.example</code> para <code>.env</code> e preencher as senhas.</li>
+  <li><code>docker compose up -d --build</code> e abrir <code>http://localhost:8000</code>.</li>
+  <li>Para a observabilidade: <code>docker compose -f docker-compose.yml -f docker-compose.observabilidade.yml up -d</code>.</li>
+  <li>Para a nuvem: <code>terraform init</code> e <code>terraform apply</code> na pasta <code>infra/</code>, com as credenciais da AWS no ambiente.</li>
+</ol>
+
+</body>
+</html>
