@@ -89,6 +89,50 @@ Limites dessa estimativa: ela não conta o tempo que o equipamento leva para rec
 que a porta fecha, nem a perda de produtos. As potências vêm de anúncios e não da etiqueta do Inmetro.
 A quantidade de aberturas por dia e a frequência de luzes esquecidas são inventadas pelo simulador.
 
+## 📈 Observabilidade
+
+O Prometheus coleta as métricas da API a cada 5 segundos e avalia os alertas. O Grafana mostra as quatro
+métricas de ouro. Preencha `GRAFANA_PASSWORD` no `.env` e suba junto com o painel:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.observabilidade.yml up -d
+```
+
+- Grafana: http://localhost:3000 (abre direto no painel "4 métricas de ouro", em modo de leitura)
+- Prometheus: http://localhost:9090/alerts
+
+As duas portas só respondem no próprio computador (`127.0.0.1`).
+
+| Métrica de ouro | O que o painel mostra | Alerta |
+|---|---|---|
+| Tráfego | Requisições por segundo, por rota, e eventos recebidos por minuto | `SemTrafego`: nenhuma requisição em 5 minutos |
+| Erros | Taxa de respostas 5xx e respostas por código | `TaxaDeErrosAlta`: mais de 5% de erros por 30 segundos |
+| Latência | Percentis p50, p95 e p99 e tempo médio por rota | `LatenciaAlta`: p95 acima de 0,5 s por 2 minutos |
+| Saturação | CPU e memória da API, requisições em andamento | `MemoriaAlta`: mais de 400 MB por 5 minutos |
+
+Há também o alerta `PainelForaDoAr`, para quando o Prometheus não consegue ler as métricas.
+
+Para apontar o Prometheus para o painel publicado na nuvem, em vez do local:
+
+```bash
+ALVO=endereço:porta docker compose -f docker-compose.observabilidade.yml up -d
+```
+
+### Como disparar o alerta de erros
+
+Pare o banco de dados. A API passa a responder com erro, e em cerca de um minuto o alerta
+`TaxaDeErrosAlta` dispara:
+
+```bash
+docker compose stop db
+```
+
+Para voltar ao normal:
+
+```bash
+docker compose start db
+```
+
 ## 🧪 Testes
 
 ```bash

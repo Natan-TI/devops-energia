@@ -1,0 +1,48 @@
+# Alertas sobre as quatro métricas de ouro: erros, latência, tráfego e saturação.
+groups:
+  - name: painel
+    rules:
+      - alert: TaxaDeErrosAlta
+        expr: |
+          sum(rate(http_requisicoes_total{status=~"5.."}[1m]))
+            / sum(rate(http_requisicoes_total[1m])) > 0.05
+        for: 30s
+        labels:
+          severidade: critica
+        annotations:
+          resumo: Mais de 5% das requisições do painel estão falhando
+          descricao: "Taxa de erros 5xx no último minuto: {{ $value | humanizePercentage }}."
+
+      - alert: LatenciaAlta
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_duracao_segundos_bucket[5m]))) > 0.5
+        for: 2m
+        labels:
+          severidade: aviso
+        annotations:
+          resumo: O painel está lento
+          descricao: "95% das requisições levam até {{ $value | humanizeDuration }}."
+
+      - alert: PainelForaDoAr
+        expr: up{job="painel"} == 0
+        for: 30s
+        labels:
+          severidade: critica
+        annotations:
+          resumo: O Prometheus não consegue ler as métricas do painel
+
+      - alert: SemTrafego
+        expr: sum(rate(http_requisicoes_total[5m])) == 0
+        for: 5m
+        labels:
+          severidade: aviso
+        annotations:
+          resumo: O painel não recebe nenhuma requisição há 5 minutos
+
+      - alert: MemoriaAlta
+        expr: process_resident_memory_bytes{job="painel"} > 400 * 1024 * 1024
+        for: 5m
+        labels:
+          severidade: aviso
+        annotations:
+          resumo: A API está usando mais de 400 MB de memória

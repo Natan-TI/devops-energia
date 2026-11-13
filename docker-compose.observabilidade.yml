@@ -1,0 +1,61 @@
+# Observabilidade: Prometheus (métricas e alertas) e Grafana (painel das 4 métricas de ouro).
+#
+# Junto com o painel local:
+#   docker compose -f docker-compose.yml -f docker-compose.observabilidade.yml up -d
+#
+# Sozinho, apontando para o painel publicado na nuvem:
+#   ALVO=endereço:porta docker compose -f docker-compose.observabilidade.yml up -d
+name: energia-painel
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    environment:
+      ALVO: ${ALVO:-api:8000}
+    # O Prometheus não lê variáveis no arquivo de configuração: o alvo é gravado antes de iniciar.
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        printf '[{"targets": ["%s"]}]' "$$ALVO" > /tmp/alvos.json
+        exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=7d
+    volumes:
+      - ./observabilidade/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observabilidade/alertas.yml:/etc/prometheus/alertas.yml:ro
+      - dados_prometheus:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090" # só acessível neste computador
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.3.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?defina GRAFANA_PASSWORD no arquivo .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      # Leitura sem login, só para quem acessa este computador (a porta não é publicada na rede).
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /etc/grafana/provisioning/dashboards/metricas-de-ouro.json
+    volumes:
+      - ./observabilidade/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observabilidade/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - dados_grafana:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000" # só acessível neste computador
+    depends_on:
+      - prometheus
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+
+volumes:
+  dados_prometheus:
+  dados_grafana:
