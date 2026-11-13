@@ -1,0 +1,18 @@
+$ curl -i http://100.60.176.115/health
+HTTP/1.1 200 OK
+date: Fri, 13 Nov 2026 16:35:23 GMT
+server: uvicorn
+content-length: 15
+content-type: application/json
+x-content-type-options: nosniff
+referrer-policy: no-referrer
+x-frame-options: DENY
+content-security-policy: default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+{"status":"ok"}
+
+$ curl -s -o /dev/null -w '%{http_code}' http://100.60.176.115/metrics   (sem token)
+401
+
+$ nc -zv 100.60.176.115 22   (porta de administração)
+fechada: sem resposta

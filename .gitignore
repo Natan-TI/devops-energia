@@ -14,3 +14,4 @@ __pycache__/
 *.tfvars
 !exemplo.tfvars
 crash.log
+*.tfplan
