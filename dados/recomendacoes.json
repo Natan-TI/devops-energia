@@ -1,0 +1,30 @@
+[
+  {
+    "loja_id": "padaria-01",
+    "periodo": "2026-11",
+    "nao_consta": false,
+    "recomendacao": "O expositor-bebidas concentra a maior parte do tempo de porta aberta. Confira a borracha de vedação e combine com a equipe de fechar a porta logo depois de repor os produtos.",
+    "fonte": {"titulo": "Exemplo de base de conhecimento (dado fictício)", "trecho_id": "exemplo-01"}
+  },
+  {
+    "loja_id": "padaria-01",
+    "periodo": "2026-11",
+    "nao_consta": false,
+    "recomendacao": "As aberturas mais longas acontecem no horário de reposição. Separe os produtos antes de abrir o equipamento, para abrir a porta uma vez só.",
+    "fonte": {"titulo": "Exemplo de base de conhecimento (dado fictício)", "trecho_id": "exemplo-02"}
+  },
+  {
+    "loja_id": "mercado-01",
+    "periodo": "2026-11",
+    "nao_consta": false,
+    "recomendacao": "O expositor-bebidas-1 é o equipamento com mais aberturas acima de 60 segundos. Vale instalar um fechador automático de porta ou um aviso sonoro no próprio equipamento.",
+    "fonte": {"titulo": "Exemplo de base de conhecimento (dado fictício)", "trecho_id": "exemplo-03"}
+  },
+  {
+    "loja_id": "mercado-01",
+    "periodo": "2026-11",
+    "nao_consta": true,
+    "recomendacao": null,
+    "fonte": null
+  }
+]

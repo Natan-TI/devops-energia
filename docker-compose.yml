@@ -1,0 +1,59 @@
+# Sobe o painel completo: banco, API com as telas e simulador de eventos.
+# Os segredos vêm do arquivo .env (copie de .env.example). Ele não vai para o repositório.
+name: energia-painel
+
+x-protecao: &protecao
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  tmpfs: [/tmp]
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: painel
+      POSTGRES_USER: painel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no arquivo .env}
+    volumes:
+      - dados_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U painel -d painel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+    # Sem "ports": o banco só é acessível pela rede interna do compose.
+
+  api:
+    build: .
+    image: energia-painel:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://painel:${POSTGRES_PASSWORD}@db:5432/painel
+      API_KEY: ${API_KEY:?defina API_KEY no arquivo .env}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+    ports:
+      - "${PORTA:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    <<: *protecao
+
+  simulador:
+    image: energia-painel:local
+    command: ["python", "simulador/simulador.py"]
+    environment:
+      API_URL: http://api:8000
+      API_KEY: ${API_KEY}
+      INTERVALO_S: ${INTERVALO_S:-5}
+    healthcheck:
+      disable: true
+    depends_on:
+      api:
+        condition: service_healthy
+    <<: *protecao
+
+volumes:
+  dados_db:

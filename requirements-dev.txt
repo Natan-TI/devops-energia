@@ -1,0 +1,4 @@
+# Dependências para rodar os testes fora do Docker.
+-r requirements.txt
+pytest==9.2.0
+httpx2==2.16.0

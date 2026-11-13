@@ -1,0 +1,16 @@
+# Segredos
+.env
+*.pem
+
+# Ambiente e caches
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Terraform: estado e variáveis ficam fora do repositório
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!exemplo.tfvars
+crash.log

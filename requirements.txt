@@ -1,0 +1,7 @@
+# Dependências da imagem. Versões fixas para o build ser reproduzível.
+fastapi==0.162.5
+uvicorn==0.54.0
+SQLAlchemy==2.1.8
+psycopg[binary]==3.3.9
+Jinja2==3.1.6
+prometheus_client==0.26.0

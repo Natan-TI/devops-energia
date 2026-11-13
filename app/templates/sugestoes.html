@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Sugestões{% endblock %}
+{% block conteudo %}
+<div class="cabecalho">
+  <h1>Sugestões do consultor de eficiência</h1>
+</div>
+
+{% for item in sugestoes %}
+<section class="painel sugestao">
+  {% if item.nao_consta %}
+  <p class="vazio">O consultor não encontrou resposta na base de conhecimento para o período {{ item.periodo }}.</p>
+  {% else %}
+  <p>{{ item.recomendacao }}</p>
+  <small>Período: {{ item.periodo }} · Fonte: {{ item.fonte.titulo }} (trecho {{ item.fonte.trecho_id }})</small>
+  {% endif %}
+</section>
+{% else %}
+<section class="painel"><p class="vazio">Nenhuma sugestão disponível para esta loja.</p></section>
+{% endfor %}
+
+<p class="legenda">As sugestões vêm de um arquivo gerado pelo consultor com LLM local (entrega de IA Generativa).
+Nesta demonstração, o arquivo contém exemplos.</p>
+{% endblock %}

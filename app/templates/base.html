@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Painel{% endblock %} · Energia que dá Lucro</title>
+  <link rel="stylesheet" href="/static/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="marca">
+      <span class="raio" aria-hidden="true">⚡</span>
+      <div>
+        <strong>Energia que dá Lucro</strong>
+        <small>Painel do comerciante</small>
+      </div>
+    </div>
+    <nav aria-label="Seções">
+      <a href="/?loja_id={{ loja }}" {% if pagina == "visao" %}aria-current="page"{% endif %}>Visão geral</a>
+      <a href="/eventos?loja_id={{ loja }}" {% if pagina == "eventos" %}aria-current="page"{% endif %}>Eventos</a>
+      <a href="/alertas?loja_id={{ loja }}" {% if pagina == "alertas" %}aria-current="page"{% endif %}>Alertas</a>
+      <a href="/sugestoes?loja_id={{ loja }}" {% if pagina == "sugestoes" %}aria-current="page"{% endif %}>Sugestões</a>
+    </nav>
+    <form class="loja" method="get">
+      <label for="loja_id">Loja</label>
+      <select id="loja_id" name="loja_id">
+        {% for item in lojas %}
+        <option value="{{ item }}" {% if item == loja %}selected{% endif %}>{{ item }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Trocar</button>
+    </form>
+  </header>
+
+  <p class="aviso">Dados simulados para demonstração. Os valores em reais são estimativas.</p>
+
+  <main>
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer>
+    FIAP · Global Solution 2026.2 · CitizenTech ·
+    <a href="/docs">Documentação da API</a>
+  </footer>
+</body>
+</html>

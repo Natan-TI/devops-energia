@@ -1,0 +1,7 @@
+# Só app/, simulador/, dados/ e requirements.txt entram na imagem.
+*
+!app
+!simulador
+!dados
+!requirements.txt
+**/__pycache__

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block titulo %}Visão geral{% endblock %}
+{% block conteudo %}
+<div class="cabecalho">
+  <h1>Visão geral</h1>
+  <form method="get" class="filtros">
+    <input type="hidden" name="loja_id" value="{{ loja }}">
+    <label for="periodo">Mês</label>
+    <input type="month" id="periodo" name="periodo" value="{{ periodo }}">
+    <button type="submit">Ver</button>
+  </form>
+</div>
+
+<section class="cartoes" aria-label="Indicadores do mês">
+  <div class="cartao destaque">
+    <span>Desperdício estimado</span>
+    <strong>{{ resumo.total_rs|brl }}</strong>
+  </div>
+  <div class="cartao">
+    <span>Projeção em 12 meses</span>
+    <strong>{{ projecao_anual|brl }}</strong>
+    <small>No ritmo de {{ dias_decorridos }} dia(s) deste mês</small>
+  </div>
+  <div class="cartao">
+    <span>Energia desperdiçada</span>
+    <strong>{{ resumo.total_kwh|numero(1) }} kWh</strong>
+  </div>
+  <div class="cartao">
+    <span>Ocorrências</span>
+    <strong>{{ resumo.eventos|numero(0) }}</strong>
+  </div>
+</section>
+
+<section class="painel">
+  <h2>De onde vem o desperdício</h2>
+  {% if resumo.por_tipo %}
+  <table>
+    <thead>
+      <tr><th>Causa</th><th>Detectado por</th><th class="num">Ocorrências</th><th class="num">Tempo</th><th class="num">Energia</th><th class="num">Custo</th><th>Parte do total</th></tr>
+    </thead>
+    <tbody>
+      {% for item in resumo.por_tipo %}
+      <tr>
+        <td>{{ nomes_tipo[item.tipo][0] }}</td>
+        <td>{{ nomes_tipo[item.tipo][1] }}</td>
+        <td class="num">{{ item.eventos|numero(0) }}</td>
+        <td class="num">{{ item.tempo_s|duracao }}</td>
+        <td class="num">{{ item.total_kwh|numero(1) }} kWh</td>
+        <td class="num">{{ item.total_rs|brl }}</td>
+        <td>
+          <svg class="proporcao" viewBox="0 0 100 8" preserveAspectRatio="none" role="img"
+               aria-label="{{ (item.total_rs / resumo.total_rs * 100)|round|int if resumo.total_rs else 0 }}% do total">
+            <rect width="100" height="8" rx="2" class="trilho"/>
+            <rect width="{{ item.total_rs / resumo.total_rs * 100 if resumo.total_rs else 0 }}" height="8" rx="2" class="barra"/>
+          </svg>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="vazio">Nenhum evento neste mês.</p>
+  {% endif %}
+</section>
+
+<section class="painel">
+  <h2>Desperdício por dia</h2>
+  {% if maximo_dia > 0 %}
+  <svg class="grafico" viewBox="0 0 {{ dias|length * 22 + 8 }} 150" role="img"
+       aria-label="Desperdício estimado em reais, por dia do mês">
+    <line x1="0" y1="120.5" x2="{{ dias|length * 22 + 8 }}" y2="120.5" class="eixo"/>
+    {% for dia in dias %}
+    {% set altura = dia.valor / maximo_dia * 110 %}
+    <rect x="{{ loop.index0 * 22 + 6 }}" y="{{ 120 - altura }}" width="16" height="{{ altura }}" rx="2" class="barra">
+      <title>{{ dia.titulo }}: {{ dia.valor|brl }}</title>
+    </rect>
+    <text x="{{ loop.index0 * 22 + 14 }}" y="136" class="rotulo">{{ dia.rotulo }}</text>
+    {% endfor %}
+  </svg>
+  <p class="legenda">Maior dia: {{ maximo_dia|brl }}. Passe o mouse sobre uma barra para ver o valor.</p>
+  {% else %}
+  <p class="vazio">Nenhum evento neste mês.</p>
+  {% endif %}
+</section>
+
+<div class="duas-colunas">
+  <section class="painel">
+    <h2>Por equipamento ou ambiente</h2>
+    {% if resumo.por_equipamento %}
+    <table>
+      <thead>
+        <tr><th>Local</th><th class="num">Ocorrências</th><th class="num">Tempo</th><th class="num">Custo</th><th>Parte do total</th></tr>
+      </thead>
+      <tbody>
+        {% for item in resumo.por_equipamento %}
+        <tr>
+          <td>{{ item.equipamento_id }}</td>
+          <td class="num">{{ item.eventos }}</td>
+          <td class="num">{{ item.tempo_aberto_s|duracao }}</td>
+          <td class="num">{{ item.total_rs|brl }}</td>
+          <td>
+            <svg class="proporcao" viewBox="0 0 100 8" preserveAspectRatio="none" role="img"
+                 aria-label="{{ (item.total_rs / maximo_equipamento * 100)|round|int if maximo_equipamento else 0 }}% do maior">
+              <rect width="100" height="8" rx="2" class="trilho"/>
+              <rect width="{{ item.total_rs / maximo_equipamento * 100 if maximo_equipamento else 0 }}" height="8" rx="2" class="barra"/>
+            </svg>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vazio">Nenhum evento neste mês.</p>
+    {% endif %}
+  </section>
+
+  <section class="painel">
+    <h2>Últimas ocorrências</h2>
+    {% if ultimos %}
+    <ul class="lista">
+      {% for evento in ultimos %}
+      <li>
+        <div>
+          <strong>{{ evento.equipamento_id }}</strong>
+          <small>{{ nomes_tipo[evento.tipo][0] }} · {{ evento.inicio|data_hora }}</small>
+        </div>
+        <span class="etiqueta {% if evento.duracao_s > limite_alerta_s %}alerta{% endif %}">{{ evento.duracao_s|duracao }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <a class="mais" href="/eventos?loja_id={{ loja }}">Ver todos os eventos</a>
+    {% else %}
+    <p class="vazio">Nenhum evento registrado.</p>
+    {% endif %}
+  </section>
+</div>
+
+{% if sugestao and not sugestao.nao_consta %}
+<section class="painel sugestao">
+  <h2>Sugestão do consultor de eficiência</h2>
+  <p>{{ sugestao.recomendacao }}</p>
+  <small>Fonte: {{ sugestao.fonte.titulo }}</small>
+  <a class="mais" href="/sugestoes?loja_id={{ loja }}">Ver todas as sugestões</a>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block titulo %}Eventos{% endblock %}
+{% block conteudo %}
+<div class="cabecalho">
+  <h1>Eventos</h1>
+  <a class="botao" href="{{ link_csv }}">Exportar CSV</a>
+</div>
+
+<form method="get" class="filtros painel">
+  <input type="hidden" name="loja_id" value="{{ loja }}">
+  <div>
+    <label for="equipamento_id">Local</label>
+    <select id="equipamento_id" name="equipamento_id">
+      <option value="">Todos</option>
+      {% for item in equipamentos %}
+      <option value="{{ item }}" {% if item == equipamento %}selected{% endif %}>{{ item }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label for="desde">De</label>
+    <input type="date" id="desde" name="desde" value="{{ desde }}">
+  </div>
+  <div>
+    <label for="ate">Até</label>
+    <input type="date" id="ate" name="ate" value="{{ ate }}">
+  </div>
+  <button type="submit">Filtrar</button>
+  <a href="/eventos?loja_id={{ loja }}">Limpar</a>
+</form>
+
+{% if erro %}<p class="erro">{{ erro }}</p>{% endif %}
+
+<section class="painel">
+  {% if eventos %}
+  <table>
+    <thead>
+      <tr><th>Início</th><th>Local</th><th>Causa</th><th>Origem</th><th class="num">Duração</th><th class="num">Energia</th><th class="num">Custo estimado</th></tr>
+    </thead>
+    <tbody>
+      {% for evento in eventos %}
+      <tr>
+        <td>{{ evento.inicio|data_hora }}</td>
+        <td>{{ evento.equipamento_id }}</td>
+        <td>{{ nomes_tipo[evento.tipo][0] }}</td>
+        <td>{{ evento.origem }}</td>
+        <td class="num"><span class="etiqueta {% if evento.duracao_s > limite_alerta_s %}alerta{% endif %}">{{ evento.duracao_s|duracao }}</span></td>
+        <td class="num">{{ evento.energia_kwh|numero(4) }} kWh</td>
+        <td class="num">{{ evento.custo_estimado_rs|brl(4) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="legenda">
+    Mostrando os {{ eventos|length }} eventos mais recentes do filtro (no máximo 200). O arquivo CSV traz até 10.000.
+    Durações em vermelho passaram do limite de {{ limite_alerta_s }} segundos.
+  </p>
+  {% else %}
+  <p class="vazio">Nenhum evento encontrado com esse filtro.</p>
+  {% endif %}
+</section>
+{% endblock %}

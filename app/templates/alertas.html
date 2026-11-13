@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}Alertas{% endblock %}
+{% block conteudo %}
+<div class="cabecalho">
+  <h1>Alertas enviados</h1>
+</div>
+
+<section class="painel">
+  {% if alertas %}
+  <table>
+    <thead>
+      <tr><th>Enviado em</th><th>Local</th><th>Canal</th><th>Mensagem</th></tr>
+    </thead>
+    <tbody>
+      {% for alerta in alertas %}
+      <tr>
+        <td>{{ alerta.enviado_em|data_hora }}</td>
+        <td>{{ alerta.equipamento_id }}</td>
+        <td><span class="etiqueta">{{ alerta.canal }}</span></td>
+        <td>{{ alerta.mensagem }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="legenda">Mostrando os {{ alertas|length }} alertas mais recentes (no máximo 200).</p>
+  {% else %}
+  <p class="vazio">Nenhum alerta enviado para esta loja.</p>
+  {% endif %}
+</section>
+{% endblock %}
